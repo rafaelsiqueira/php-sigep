@@ -7,7 +7,7 @@ use PhpSigep\Pdf\Script\Elipse;
 /**
  * @author: Stavarengo
  */
-class Sedex
+class Sedex extends AbstractChancela
 {
 
     const SERVICE_E_SEDEX    = 1;
@@ -16,22 +16,6 @@ class Sedex
     const SERVICE_SEDEX_HOJE = 4;
     const SERVICE_SEDEX_12   = 5;
 
-    /**
-     * @var int
-     */
-    private $x;
-    /**
-     * @var int
-     */
-    private $y;
-    /**
-     * @var string
-     */
-    private $nomeRemetente;
-    /**
-     * @var \PhpSigep\Model\AccessData
-     */
-    private $accessData;
     private $tipoServico;
 
     /**
@@ -39,16 +23,25 @@ class Sedex
      * @param int $y
      * @param string $nomeRemetente
      * @param int $tipoServico
-     *        Uma das contantes {@link Sedex}::SERVICO_*
+     *        Uma das contantes {@link Sedex}::SERVICE_*
      * @param \PhpSigep\Model\AccessData $accessData
      */
     public function __construct($x, $y, $nomeRemetente, $tipoServico, \PhpSigep\Model\AccessData $accessData)
     {
-        $this->x             = $x;
-        $this->y             = $y;
-        $this->nomeRemetente = $nomeRemetente;
-        $this->tipoServico   = $tipoServico;
-        $this->accessData    = $accessData;
+        parent::__construct($x, $y, $nomeRemetente, $accessData);
+        
+        $this->setServicoDePostagem($tipoServico);
+    }
+
+    public function setServicoDePostagem($servicoPostagem)
+    {
+        $rClass = new \ReflectionClass(__CLASS__);
+        $servicos = $rClass->getConstants();
+        
+        if (in_array($servicoPostagem, $servicos) === false) {
+            throw new \InvalidArgumentException('O serviço de postagem deve ser uma das constantes da classe');
+        }
+        $this->tipoServico = $servicoPostagem;
     }
 
     public function draw(\PhpSigep\Pdf\ImprovedFPDF $pdf)

@@ -48,7 +48,7 @@ class FecharPreListaDePostagem
         $result = new Result();
         try {
             $r = SoapClientFactory::getSoapClient()->fechaPlpVariosServicos($soapArgs);
-            if (class_exists('\StaLib_Logger')) {
+            if (class_exists('\StaLib_Logger',false)) {
                 \StaLib_Logger::log('Retorno SIGEP fecha PLP: ' . print_r($r, true));
             }
             if ($r instanceof \SoapFault) {
@@ -112,7 +112,7 @@ class FecharPreListaDePostagem
     {
         $writer->startElement('remetente');
         $writer->writeElement('numero_contrato', $data->getAccessData()->getNumeroContrato());
-        $writer->writeElement('numero_diretoria', $data->getRemetente()->getDiretoria()->getNumero());
+        $writer->writeElement('numero_diretoria', $data->getAccessData()->getDiretoria()->getNumero());
         $writer->writeElement('codigo_administrativo', $data->getAccessData()->getCodAdministrativo());
         $writer->startElement('nome_remetente');
         $writer->writeCData($this->_($data->getRemetente()->getNome(), 50));
@@ -264,7 +264,8 @@ class FecharPreListaDePostagem
         foreach ($servicosAdicionais as $servicoAdicional) {
             if ($servicoAdicional->getCodigoServicoAdicional() != ServicoAdicional::SERVICE_REGISTRO) {
                 $writer->writeElement('codigo_servico_adicional', $servicoAdicional->getCodigoServicoAdicional());
-                if ($servicoAdicional->getCodigoServicoAdicional() == ServicoAdicional::SERVICE_VALOR_DECLARADO) {
+                if ($servicoAdicional->getCodigoServicoAdicional() == ServicoAdicional::SERVICE_VALOR_DECLARADO_SEDEX ||
+                    $servicoAdicional->getCodigoServicoAdicional() == ServicoAdicional::SERVICE_VALOR_DECLARADO_PAC) {
                     $writer->writeElement('valor_declarado', (float)$servicoAdicional->getValorDeclarado());
                 }
             }
@@ -279,7 +280,7 @@ class FecharPreListaDePostagem
         $writer->writeElement('tipo_objeto', $dimensao->getTipo());
         $writer->writeElement('dimensao_altura', $dimensao->getAltura());
         $writer->writeElement('dimensao_largura', $dimensao->getLargura());
-        $writer->writeElement('dimensao_comprimento', $dimensao->getComprimento() + 10);
+        $writer->writeElement('dimensao_comprimento', $dimensao->getComprimento());
         if (!$dimensao->getDiametro()) {
             $writer->writeElement('dimensao_diametro', 0);
         } else {

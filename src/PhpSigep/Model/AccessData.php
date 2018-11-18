@@ -1,6 +1,8 @@
 <?php
 namespace PhpSigep\Model;
 
+use PhpSigep\InvalidArgument;
+
 /**
  * @author: Stavarengo
  */
@@ -19,6 +21,14 @@ class AccessData extends AbstractModel
      * @var string
      */
     protected $senha;
+    /**
+     * @var string
+     */
+    protected $idCorreiosUsuario;
+    /**
+     * @var string
+     */
+    protected $idCorreiosSenha;
     /**
      * @var string
      */
@@ -161,11 +171,49 @@ class AccessData extends AbstractModel
     }
 
     /**
-     * @param \PhpSigep\Model\Diretoria $diretoria
+     * @param \PhpSigep\Model\Diretoria|int $diretoria
+     * @throws InvalidArgument
      */
     public function setDiretoria($diretoria)
     {
+        if (is_int($diretoria)) {
+            $diretoria = new Diretoria($diretoria);
+        }
+        if (!($diretoria instanceof Diretoria)) {
+            throw new InvalidArgument('A Diretoria deve ser ser uma instância de \PhpSigep\Model\Diretoria.');
+        }
         $this->diretoria = $diretoria;
     }
 
+    /**
+     * @return string
+     */
+    public function getIdCorreiosUsuario()
+    {
+        return $this->idCorreiosUsuario;
+    }
+
+    /**
+     * @param string $idCorreiosUsuario
+     */
+    public function setIdCorreiosUsuario($idCorreiosUsuario)
+    {
+        $this->idCorreiosUsuario = $idCorreiosUsuario;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIdCorreiosSenha()
+    {
+        return $this->idCorreiosSenha;
+    }
+
+    /**
+     * @param string $idCorreiosSenha
+     */
+    public function setIdCorreiosSenha($idCorreiosSenha)
+    {
+        $this->idCorreiosSenha = $idCorreiosSenha;
+    }
 }
